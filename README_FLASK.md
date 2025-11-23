@@ -6,15 +6,22 @@ Buzz Off targets the slow, manual identification of dengue-carrying Aedes mosqui
 ## 2️⃣ Problem Solution
 The app lets anyone upload a mosquito image and instantly see if it's dengue-positive. DenseNet161 powers the predictions, while Flask/Gradio provide an accessible, drag-and-drop interface with confidence scores and probability bars.
 
-## 3️⃣ Technology Stack Used
+## 3️⃣ Team Members
+- Laiba Khan – laiba.khan0278@gmail.com
+- Sonail Saqib – sonailsaqib2000@gmail.com
+- Anoosha Khan – anooshkhan799@gmail.com
+- Huzaifa Iftikhar – chhuzaifaiftikhar@gmail.com
+- Meerab Farooq – 28100252@lums.edu.pk
+
+## 4️⃣ Technology Stack Used
 1. **Model Runtime**: Python, PyTorch, Torchvision (DenseNet161)
 2. **Web Layer**: Flask for local/UI API, Gradio on Hugging Face Spaces for the hosted demo
 3. **Infrastructure**: Hugging Face Spaces for deployment, Google Drive for hosting large `.pt` weights, GitHub for source control
 
-## 4️⃣ High-Level Diagram
+## 5️⃣ High-Level Diagram
 *(Paste architecture diagram here)*
 
-## 5️⃣ Live Demo
+## 6️⃣ Live Demo
 - **Hosted Space**: https://huggingface.co/spaces/huzaifaiftikhar/buzz_off
 - **Local quick start**
   ```bash
@@ -24,12 +31,6 @@ The app lets anyone upload a mosquito image and instantly see if it's dengue-pos
   python scripts/download_weights.py && python app.py
   ```
 - Open `http://localhost:5000`, upload an image, click **Analyze Mosquito**, and review the result card.
-
-## 6️⃣ Team Members
-- Sonail Saqib – sonailsaqib2000@gmail.com
-- Laiba Khan – laiba.khan0278@gmail.com
-- Anoosha Khan – anooshkhan799@gmail.com
-- Huzaifa Iftikhar – chhuzaifaiftikhar@gmail.com
 
 ---
 
