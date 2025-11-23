@@ -1,164 +1,79 @@
 # Buzz Off - Mosquito Classification Web App
 
-A Flask-based web application that classifies mosquito images to detect if they are dengue carriers (Aedes mosquitoes) using a trained DenseNet161 model.
+## 1️⃣ Project Name / Problem Statement
+Buzz Off targets the slow, manual identification of dengue-carrying Aedes mosquitoes. Field teams often rely on visual inspection, delaying outbreak response.
 
-## Features
+## 2️⃣ Problem Solution
+The app lets anyone upload a mosquito image and instantly see if it's dengue-positive. DenseNet161 powers the predictions, while Flask/Gradio provide an accessible, drag-and-drop interface with confidence scores and probability bars.
 
-- 🦟 Upload mosquito images for classification
-- 🎯 Real-time prediction with confidence scores
-- 📊 Visual probability distribution
-- 🎨 Modern, responsive UI
-- 🚀 Easy to deploy
+## 3️⃣ Technology Stack Used
+1. **Model Runtime**: Python, PyTorch, Torchvision (DenseNet161)
+2. **Web Layer**: Flask for local/UI API, Gradio on Hugging Face Spaces for the hosted demo
+3. **Infrastructure**: Hugging Face Spaces for deployment, Google Drive for hosting large `.pt` weights, GitHub for source control
 
-## Project Structure
+## 4️⃣ High-Level Diagram
+*(Paste architecture diagram here)*
 
+## 5️⃣ Live Demo
+- **Hosted Space**: https://huggingface.co/spaces/huzaifaiftikhar/buzz_off
+- **Local quick start**
+  ```bash
+  git clone https://github.com/fypsmartbite/Buzz-Off---Mosquito-Classification-Web-App.git
+  cd Buzz-Off---Mosquito-Classification-Web-App
+  pip install -r requirements.txt
+  python scripts/download_weights.py && python app.py
+  ```
+- Open `http://localhost:5000`, upload an image, click **Analyze Mosquito**, and review the result card.
+
+## 6️⃣ Team Members
+- Sonail Saqib – sonailsaqib2000@gmail.com
+- Laiba Khan – laiba.khan0278@gmail.com
+- Anoosha Khan – anooshkhan799@gmail.com
+- Huzaifa Iftikhar – chhuzaifaiftikhar@gmail.com
+
+---
+
+## Appendix: Architecture & Developer Notes
+
+### Project Structure
 ```
 Prototype/
 ├── app.py                          # Flask application
+├── scripts/download_weights.py     # Pulls weights from Google Drive
 ├── src/
 │   ├── predict.py                  # Inference module
-│   ├── transfer.py                 # Model architecture
+│   ├── transfer.py                 # Transfer-learning helper
 │   ├── data.py                     # Data loading utilities
 │   └── helpers.py                  # Helper functions
-├── templates/
-│   └── index.html                  # Web interface
-├── static/
-│   └── uploads/                    # Uploaded images storage
-├── denseNet_161_64_25_0.001_adam.pt  # Trained model weights
-├── mean_and_std.pt                 # Normalization parameters
-└── requirements_flask.txt          # Python dependencies
+├── templates/index.html            # Web interface
+├── static/uploads/                 # Uploaded images
+├── mean_and_std.pt                 # Normalization tensors
+├── denseNet_161_64_25_0.001_adam.pt# Model weights (downloaded at runtime)
+├── requirements.txt                # Dependencies
+└── README_FLASK.md                 # This document
 ```
 
-## Installation
+### API Endpoints
+- `GET /` → Renders the upload UI
+- `POST /predict` → Multipart file upload, returns JSON (`prediction`, `confidence`, `probabilities`, `image_url`)
+- `GET /health` → `{ "status": "healthy", "model_loaded": true }`
 
-### 1. Clone or navigate to the project directory
+### Model & Config Highlights
+- DenseNet161 backbone with custom classifier head (Linear → ReLU → Dropout stack)
+- Preprocessing: Resize 256 → CenterCrop 224 → Normalize with dataset mean/std
+- Upload validation: extension allow list, 16 MB limit, filenames sanitized via `secure_filename`
 
+### Local Development Cheatsheet
 ```bash
-cd /Users/muhammadharis/Downloads/Prototype
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python scripts/download_weights.py
+python app.py  # http://localhost:5000
 ```
 
-### 2. Create a virtual environment (recommended)
+### Troubleshooting
+- **Model not found**: ensure `denseNet_161_64_25_0.001_adam.pt` downloads (rerun `scripts/download_weights.py`).
+- **Missing deps**: reinstall via `pip install -r requirements.txt` and restart the server.
+- **Port busy**: edit `app.run(..., port=5001)` in `app.py`.
 
-```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### 3. Install dependencies
-
-```bash
-pip install -r requirements_flask.txt
-```
-
-## Usage
-
-### Start the Flask server
-
-```bash
-python app.py
-```
-
-The server will start on `http://localhost:5000`
-
-### Access the web interface
-
-1. Open your browser and go to `http://localhost:5000`
-2. Upload a mosquito image (PNG, JPG, JPEG, GIF, BMP, WEBP)
-3. Click "Analyze Mosquito"
-4. View the prediction results with confidence scores
-
-## API Endpoints
-
-### `GET /`
-- Returns the main web interface
-
-### `POST /predict`
-- Upload an image for classification
-- **Request**: Multipart form data with `file` field
-- **Response**: JSON with prediction results
-
-```json
-{
-  "prediction": "Dengue Mosquito (Aedes)",
-  "is_dengue": true,
-  "confidence": 0.95,
-  "probabilities": {
-    "Non-Dengue": 0.05,
-    "Dengue": 0.95
-  },
-  "image_url": "/static/uploads/mosquito.jpg"
-}
-```
-
-### `GET /health`
-- Health check endpoint
-- **Response**: `{"status": "healthy", "model_loaded": true}`
-
-## Model Details
-
-- **Architecture**: DenseNet161 (Transfer Learning)
-- **Classes**: 
-  - Non-Dengue Mosquito (Class 0)
-  - Dengue Mosquito - Aedes (Class 1)
-- **Input Size**: 224x224 pixels
-- **Preprocessing**: 
-  - Resize to 256x256
-  - Center crop to 224x224
-  - Normalize with dataset mean and std
-
-## Configuration
-
-Edit `app.py` to modify:
-
-- `UPLOAD_FOLDER`: Directory for uploaded images (default: `static/uploads`)
-- `MAX_CONTENT_LENGTH`: Maximum file size (default: 16MB)
-- `MODEL_PATH`: Path to model weights
-- `MEAN_STD_PATH`: Path to normalization parameters
-
-## Troubleshooting
-
-### Model Loading Error
-- Ensure `denseNet_161_64_25_0.001_adam.pt` exists in the project root
-- Ensure `mean_and_std.pt` exists in the project root
-
-### Import Errors
-- Make sure all dependencies are installed: `pip install -r requirements_flask.txt`
-- Activate your virtual environment
-
-### Port Already in Use
-- Change the port in `app.py`: `app.run(debug=True, host='0.0.0.0', port=5001)`
-
-## Development
-
-To run in development mode with auto-reload:
-
-```bash
-export FLASK_ENV=development  # On Windows: set FLASK_ENV=development
-python app.py
-```
-
-## Production Deployment
-
-For production, use a WSGI server like Gunicorn:
-
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
-```
-
-## Security Notes
-
-- File uploads are restricted to image formats only
-- File size is limited to 16MB
-- Filenames are sanitized using `secure_filename()`
-- Consider adding authentication for production use
-
-## License
-
-This project is for educational and research purposes.
-
-## Credits
-
-- Model: DenseNet161 with custom classifier
-- Framework: Flask, PyTorch, TorchVision
-- Dataset: Mosquito classification dataset
